@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gabriel Orlando Terra de Souza — Vision AI</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --bg:         #0a0a0f;
+      --surface:    #12121a;
+      --card:       #1a1a26;
+      --border:     #2a2a3d;
+      --accent:     #00e5ff;
+      --accent2:    #7c3aed;
+      --accent3:    #10b981;
+      --text:       #e8e8f0;
+      --muted:      #6b6b8a;
+      --danger:     #f43f5e;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      padding: 1.25rem 2rem;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .site-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+
+    .site-title span {
+      color: var(--accent);
+    }
+
+    .badge-model {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      background: rgba(0,229,255,0.08);
+      color: var(--accent);
+      border: 1px solid rgba(0,229,255,0.25);
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+    }
+
+    /* ── HERO / GLOW ── */
+    .hero-glow {
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(0,229,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1.25rem 5rem;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-headline {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .page-headline .highlight {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-sub {
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-top: 0.75rem;
+      max-width: 480px;
+      line-height: 1.7;
+    }
+
+    /* ── START BUTTON ── */
+    .btn-start {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      color: #0a0a0f;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      padding: 0.85rem 2rem;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 0 0 rgba(0,229,255,0.4);
+    }
+
+    .btn-start::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,229,255,0.35);
+    }
+
+    .btn-start:active { transform: translateY(0); }
+
+    .btn-start.loading {
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    .btn-start .spinner-border {
+      width: 1rem;
+      height: 1rem;
+      border-width: 2px;
+    }
+
+    /* Pulse ring on button */
+    .pulse-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 16px;
+      border: 2px solid var(--accent);
+      opacity: 0;
+      animation: none;
+    }
+
+    .btn-start.active .pulse-ring {
+      animation: pulse-anim 1.8s ease-out infinite;
+    }
+
+    @keyframes pulse-anim {
+      0%   { transform: scale(1);   opacity: 0.6; }
+      100% { transform: scale(1.15); opacity: 0; }
+    }
+
+    /* ── STATUS PILL ── */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
+      transition: all 0.3s;
+    }
+
+    .status-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: background 0.3s;
+    }
+
+    .status-pill.active {
+      color: var(--accent3);
+      border-color: rgba(16,185,129,0.35);
+      background: rgba(16,185,129,0.08);
+    }
+
+    .status-pill.active .dot {
+      background: var(--accent3);
+      box-shadow: 0 0 6px var(--accent3);
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    /* ── WEBCAM CARD ── */
+    .webcam-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+    }
+
+    .webcam-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+    }
+
+    .webcam-placeholder i {
+      font-size: 2.5rem;
+      color: var(--border);
+    }
+
+    #webcam-container {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #webcam-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Scan line effect */
+    .webcam-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,229,255,0.018) 3px,
+        rgba(0,229,255,0.018) 4px
+      );
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Corner brackets */
+    .corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      z-index: 10;
+    }
+    .corner.tl { top: 10px; left: 10px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+    .corner.tr { top: 10px; right: 10px; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+    .corner.bl { bottom: 10px; left: 10px; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+    .corner.br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+
+    /* ── PREDICTIONS CARD ── */
+    .predictions-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .predictions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .predictions-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── PREDICTION ITEM ── */
+    .prediction-item {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prediction-item:last-child { border-bottom: none; }
+
+    .prediction-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.55rem;
+    }
+
+    .prediction-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .prediction-index {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .prediction-pct {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--accent);
+      min-width: 40px;
+      text-align: right;
+      transition: color 0.3s;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: var(--surface);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.25s ease, background 0.3s;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      box-shadow: 0 0 8px rgba(0,229,255,0.4);
+    }
+
+    /* Color classes for high-confidence bars */
+    .progress-fill.high {
+      background: linear-gradient(90deg, var(--accent3), #34d399);
+      box-shadow: 0 0 10px rgba(16,185,129,0.5);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 1.25rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── UTILITIES ── */
+    .hidden { display: none !important; }
+
+    /* Responsive tweaks */
+    @media (max-width: 576px) {
+      main { padding: 2rem 1rem 4rem; }
+      .predictions-card { padding: 1.25rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="site-title">
+        Gabriel<span>.</span>AI
+      </div>
+      <span class="badge-model"><i class="bi bi-cpu me-1"></i>Teachable Machine</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero-glow"></div>
+
+    <!-- INTRO -->
+    <div class="row mb-5 align-items-end">
+      <div class="col-lg-7">
+        <p class="section-label">// visão computacional</p>
+        <h1 class="page-headline">
+          Reconhecimento<br>de <span class="highlight">Imagem em Tempo Real</span>
+        </h1>
+        <p class="page-sub">
+          Projeto de Gabriel Orlando Terra de Souza — modelo treinado com Google Teachable Machine,
+          classificação ao vivo via webcam usando TensorFlow.js.
+        </p>
+      </div>
+      <div class="col-lg-5 mt-4 mt-lg-0 d-flex align-items-center gap-3 flex-wrap">
+        <button class="btn-start" id="startBtn" onclick="init()">
+          <div class="pulse-ring"></div>
+          <i class="bi bi-camera-video-fill"></i>
+          <span id="btnText">Ativar Câmera</span>
+          <span id="btnSpinner" class="spinner-border hidden" role="status"></span>
+        </button>
+        <div class="status-pill" id="statusPill">
+          <div class="dot"></div>
+          <span id="statusText">AGUARDANDO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEBCAM + PREDICTIONS GRID -->
+    <div class="row g-4">
+
+      <!-- WEBCAM -->
+      <div class="col-12 col-md-5">
+        <p class="section-label mb-2">// feed da câmera</p>
+        <div class="webcam-card">
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
+
+          <div class="webcam-placeholder" id="placeholder">
+            <i class="bi bi-camera-video-off"></i>
+            <span>CÂMERA INATIVA</span>
+          </div>
+
+          <div id="webcam-container"></div>
+        </div>
+      </div>
+
+      <!-- PREDICTIONS -->
+      <div class="col-12 col-md-7">
+        <p class="section-label mb-2">// classificações</p>
+        <div class="predictions-card">
+          <div class="predictions-header">
+            <span class="predictions-title">Resultado do Modelo</span>
+            <span class="badge-model" id="classCount">— classes</span>
+          </div>
+          <div id="label-container">
+            <!-- Populated by JS -->
+            <div class="webcam-placeholder py-4" style="border:none;">
+              <i class="bi bi-bar-chart-line" style="font-size:2rem; color:var(--border);"></i>
+              <span style="font-size:0.78rem; color:var(--muted);">Inicie a câmera para ver as predições</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    Gabriel Orlando Terra de Souza &nbsp;·&nbsp; Powered by TensorFlow.js + Teachable Machine
+  </footer>
+
+  <!-- TF + Teachable Machine -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/JdT79SZj0//";
+    let model, webcam, labelContainer, maxPredictions;
+
+    const BAR_COLORS = [
+      'linear-gradient(90deg,#7c3aed,#00e5ff)',
+      'linear-gradient(90deg,#f43f5e,#f97316)',
+      'linear-gradient(90deg,#10b981,#34d399)',
+      'linear-gradient(90deg,#f59e0b,#fbbf24)',
+      'linear-gradient(90deg,#8b5cf6,#ec4899)',
+    ];
+
+    async function init() {
+      const btn     = document.getElementById('startBtn');
+      const btnText = document.getElementById('btnText');
+      const spinner = document.getElementById('btnSpinner');
+
+      // Loading state
+      btn.classList.add('loading');
+      btnText.textContent = 'Carregando…';
+      spinner.classList.remove('hidden');
+
+      try {
+        model         = await tmImage.load(MODEL_URL + "model.json", MODEL_URL + "metadata.json");
+        maxPredictions = model.getTotalClasses();
+
+        // Webcam
+        webcam = new tmImage.Webcam(400, 400, true);
+        await webcam.setup();
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        // Show webcam
+        document.getElementById('placeholder').classList.add('hidden');
+        const container = document.getElementById('webcam-container');
+        container.innerHTML = '';
+        container.appendChild(webcam.canvas);
+
+        // Build label UI
+        buildLabels();
+
+        // Update button
+        btn.classList.remove('loading');
+        btn.classList.add('active');
+        btnText.textContent = 'Ao Vivo';
+        spinner.classList.add('hidden');
+
+        // Status pill
+        const pill = document.getElementById('statusPill');
+        pill.classList.add('active');
+        document.getElementById('statusText').textContent = 'ATIVO';
+        document.getElementById('classCount').textContent = maxPredictions + ' classes';
+
+      } catch (err) {
+        console.error(err);
+        btn.classList.remove('loading');
+        btnText.textContent = 'Erro — Tente Novamente';
+        spinner.classList.add('hidden');
+      }
+    }
+
+    function buildLabels() {
+      labelContainer = document.getElementById('label-container');
+      labelContainer.innerHTML = '';
+
+      for (let i = 0; i < maxPredictions; i++) {
+        const item = document.createElement('div');
+        item.className = 'prediction-item';
+        item.innerHTML = `
+          <div class="prediction-row">
+            <div class="prediction-label">
+              <div class="prediction-index">${i + 1}</div>
+              <span class="class-name">Classe ${i + 1}</span>
+            </div>
+            <span class="prediction-pct">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="background:${BAR_COLORS[i % BAR_COLORS.length]}"></div>
+          </div>
+        `;
+        labelContainer.appendChild(item);
+      }
+    }
+
+    async function loop() {
+      webcam.update();
+      await predict();
+      window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+      const prediction = await model.predict(webcam.canvas);
+      const items = labelContainer.querySelectorAll('.prediction-item');
+
+      prediction.forEach((p, i) => {
+        if (!items[i]) return;
+        const pct  = Math.round(p.probability * 100);
+        const bar  = items[i].querySelector('.progress-fill');
+        const pctEl = items[i].querySelector('.prediction-pct');
+        const nameEl = items[i].querySelector('.class-name');
+
+        nameEl.textContent = p.className;
+        pctEl.textContent  = pct + '%';
+        bar.style.width    = pct + '%';
+
+        // Highlight dominant class
+        if (pct >= 70) {
+          bar.classList.add('high');
+          pctEl.style.color = 'var(--accent3)';
+        } else {
+          bar.classList.remove('high');
+          pctEl.style.color = 'var(--accent)';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
